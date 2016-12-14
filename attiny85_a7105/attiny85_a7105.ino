@@ -5,8 +5,9 @@ extern "C" {
 }
 
 
-
-
+//a7105 based on  https://github.com/mowfask/A7105-uart/tree/master/src/A7105-uart
+//receiver protocol based on BradWii's implementation https://github.com/goebish/bradwii-X4/blob/master/src/rx_x4.c
+ 
 volatile int state =1;
 volatile unsigned int ch[6];
 volatile unsigned int n_ch[6];
@@ -74,7 +75,7 @@ void setup()
   
   init_a7105();
   bind();
- TIMSK |= (1 << TOIE1);
+ TIMSK |= (1 << TOIE1); //TODO: Why does this cause glitching when initialized during the bind step (interrupts colliding?) probably related to glitching on Ch0
   A7105_Strobe(A7105_RX);
 }
 
@@ -88,7 +89,7 @@ ISR(TIM1_OVF_vect)
 
 {
 
-/*if (wait_for_read_rx == 1)
+/*if (wait_for_read_rx == 1) 
 {
    TCCR1 = 128 | 13;
   OCR1C = 32;
@@ -376,7 +377,7 @@ void loop()
 {
   if (transmitting == 0)
   {
-//    wait_for_read_rx = 1;
+//    wait_for_read_rx = 1; //TODO: Trying to figure out what is causing glitches on  CH0
 
     readrx();
 //        wait_for_read_rx = 0;
