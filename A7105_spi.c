@@ -1,25 +1,25 @@
 /*
- *  This file is part of A7105-uart, a UART interface to the A7105 wireless
- *  tranceiver.
- *  Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
- *
- *  A7105-uart is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  A7105-uart is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
- */
+    This file is part of A7105-uart, a UART interface to the A7105 wireless
+    tranceiver.
+    Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
+
+    A7105-uart is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    A7105-uart is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /* This file contains a software implementation (bitbang FTW) of the 3-wire
- * SPI used by the A7105.
- */
+SPI used by the A7105.
+*/
 
 #include "A7105_spi.h"
 
@@ -39,24 +39,24 @@ static void SPI_bus_write(uint8_t data)
     // SPI_IO_PP equals 0 (see A7015_SPI.h).
     // Splitting the binary operations into understandable instructions
     // would probably make this slow, as all the variables are volatile.
-    for(i = 7; i >= SPI_IO_PP; --i)
+    for (i = 7; i >= SPI_IO_PP; --i)
     {
         SPI_IO_PORT = (SPI_IO_PORT & ~(1 << SPI_IO_PP)) | // clear IO bit
-                      ((data & (1 << i))    // find current address bit
-                       >> (i - SPI_IO_PP)); // and shift if from position i
-                                            // to the IO bit position
+        ((data & (1 << i))    // find current address bit
+        >> (i - SPI_IO_PP)); // and shift if from position i
+        // to the IO bit position
         SPI_CLK_HIGH();
         SPI_CLK_LOW();
     }
-    if(SPI_IO_PP > 0)
+    if (SPI_IO_PP > 0)
     {
-        for(i = SPI_IO_PP - 1; i >= 0; --i)
+        for (i = SPI_IO_PP - 1; i >= 0; --i)
         {
             SPI_IO_PORT =
-                (SPI_IO_PORT & ~(1 << SPI_IO_PP)) | // clear IO bit
-                ((data & (1 << i))    // find current address bit
-                << (SPI_IO_PP - i));  // and shift if from position i
-                                      // to the IO bit position
+            (SPI_IO_PORT & ~(1 << SPI_IO_PP)) | // clear IO bit
+            ((data & (1 << i))    // find current address bit
+            << (SPI_IO_PP - i));  // and shift if from position i
+            // to the IO bit position
             SPI_CLK_HIGH();
             SPI_CLK_LOW();
         }
@@ -74,20 +74,20 @@ static uint8_t SPI_bus_read(void)
     // Assume MISO/MOSI is input (SPI_bus_write should leave it as that)
 
     // Analogous to SPI_bus_write()
-    for(i = 7; i >= SPI_IO_PP; --i)
+    for (i = 7; i >= SPI_IO_PP; --i)
     {
         data |= (SPI_IO_PIN & (1 << SPI_IO_PP)) //slect IO bit
-                << (i - SPI_IO_PP);         //and shift it to position i
+        << (i - SPI_IO_PP);         //and shift it to position i
 
         SPI_CLK_HIGH();
         SPI_CLK_LOW();
     }
-    if(SPI_IO_PP > 0)
+    if (SPI_IO_PP > 0)
     {
-        for(i = SPI_IO_PP-1; i >= 0; --i)
+        for (i = SPI_IO_PP - 1; i >= 0; --i)
         {
             data |= (SPI_IO_PIN & (1 << SPI_IO_PP)) //slect IO bit
-                    >> (SPI_IO_PP - i);     //and shift it to position i
+            >> (SPI_IO_PP - i);     //and shift it to position i
 
             // We're pulsing the clock once too often, but that shouldn't
             // matter.
@@ -96,7 +96,7 @@ static uint8_t SPI_bus_read(void)
         }
     }
 
-    return(data);
+    return (data);
 }
 
 void SPI_single_write(uint8_t data)
@@ -131,12 +131,12 @@ uint8_t SPI_reg_read(uint8_t reg)
     data = SPI_bus_read();
     SPI_CDESELECT();
 
-    return(data);
+    return (data);
 }
 
 void SPI_reg_multi_write(uint8_t reg, uint8_t *buf, uint8_t len)
 /* Write len bytes from buf into register reg.
- */
+*/
 {
     uint8_t i;
 
@@ -144,7 +144,7 @@ void SPI_reg_multi_write(uint8_t reg, uint8_t *buf, uint8_t len)
     SPI_CSELECT();
     SPI_bus_write(reg);
 
-    for(i = 0; i < len; ++i)
+    for (i = 0; i < len; ++i)
     {
         SPI_bus_write(buf[i]);
     }
@@ -154,7 +154,7 @@ void SPI_reg_multi_write(uint8_t reg, uint8_t *buf, uint8_t len)
 
 void SPI_reg_multi_read(uint8_t reg, uint8_t *buf, uint8_t len)
 /* Read len bytes from register reg into buf
- */
+*/
 {
     uint8_t i;
 
@@ -164,7 +164,7 @@ void SPI_reg_multi_read(uint8_t reg, uint8_t *buf, uint8_t len)
     SPI_CSELECT();
     SPI_bus_write(reg);
 
-    for(i = 0; i < len; ++i)
+    for (i = 0; i < len; ++i)
     {
         buf[i] = SPI_bus_read();
     }
@@ -196,7 +196,7 @@ void A7105_WritePayload(uint8_t * _packet, uint8_t len)
     SPI_bus_write(A7105_RST_WRPTR);
     SPI_bus_write(0x05);
 
-    for(i = 0; i < len; ++i)
+    for (i = 0; i < len; ++i)
     {
         SPI_bus_write(_packet[i]);
     }
@@ -212,7 +212,7 @@ void A7105_ReadPayload(uint8_t * _packet, uint8_t len)
     SPI_CSELECT();
     SPI_bus_write(0x45);
 
-    for(i = 0; i < len; ++i)
+    for (i = 0; i < len; ++i)
     {
         _packet[i] = SPI_bus_read();
     }

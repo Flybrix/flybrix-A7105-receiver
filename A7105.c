@@ -1,21 +1,21 @@
 /*
- *  This file is part of A7105-uart, a UART interface to the A7105 wireless
- *  tranceiver.
- *  Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
- *
- *  A7105-uart is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  A7105-uart is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
- */
+    This file is part of A7105-uart, a UART interface to the A7105 wireless
+    tranceiver.
+    Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
+
+    A7105-uart is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    A7105-uart is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 #include "A7105.h"
@@ -45,17 +45,17 @@ uint8_t A7105_calib(void)
     calibreg = SPI_reg_read(A7105_reg_calib);
 
     // Check calibration timeouts
-    if(testbit(calibreg, 0))
+    if (testbit(calibreg, 0))
     {
         // IF filter bank calibration took too long
         retval |= 0x10;
     }
-    if(testbit(calibreg, 1))
+    if (testbit(calibreg, 1))
     {
         // VCO bank calibration took too long
         retval |= 0x01;
     }
-    if(testbit(calibreg, 2))
+    if (testbit(calibreg, 2))
     {
         // VCO current calibration took too long
         retval |= 0x04;
@@ -63,20 +63,20 @@ uint8_t A7105_calib(void)
 
     // Check calibration success
     // FBCF bit: Indicates calib failure
-    if(testbit(SPI_reg_read(A7105_reg_IF_calibI), 4))
+    if (testbit(SPI_reg_read(A7105_reg_IF_calibI), 4))
     {
         // IF calib not successful
         retval |= 0x20;
     }
 
     // VBCF bit: Indicates calib failure
-    if(testbit(SPI_reg_read(A7105_reg_VCO_sb_calibI), 3))
+    if (testbit(SPI_reg_read(A7105_reg_VCO_sb_calibI), 3))
     {
         // VCO bank calibration not successful
         retval |= 0x02;
     }
     // FVCC bit: Indicates calib failure
-    if(testbit(SPI_reg_read(A7105_reg_VCO_c_calib), 4))
+    if (testbit(SPI_reg_read(A7105_reg_VCO_c_calib), 4))
     {
         // VCO current calib not successful
         retval |= 0x08;
@@ -84,7 +84,7 @@ uint8_t A7105_calib(void)
 
     SPI_single_write(A7105_strobe_standby);
 
-    return(retval);
+    return (retval);
 }
 
 void A7105_init(void)
@@ -100,12 +100,12 @@ void A7105_init(void)
     // sends on 1-166, slave sends on 0-165).
 
     /* Current understanding of the datasheet (concerning Auto IF):
-     * Master sends on channel n, sets ULS=0 to receive on channel n-1.
-     * Slave then has to send on channel n-1, but sets ULS=1 to receive on
-     * channel n-1+1=n. Besides the bad english, the datasheet is also
-     * not clear about what to do if the channel width is not 500KHz, as
-     * ULS always shifts by 500KHz.
-     */
+    Master sends on channel n, sets ULS=0 to receive on channel n-1.
+    Slave then has to send on channel n-1, but sets ULS=1 to receive on
+    channel n-1+1=n. Besides the bad english, the datasheet is also
+    not clear about what to do if the channel width is not 500KHz, as
+    ULS always shifts by 500KHz.
+*/
 
     // Demodulator DC estimation average mode: 0x1 is recommended.
     // Preamble pattern detection length: 0x2 recommended for 500Kbps
@@ -141,7 +141,7 @@ uint32_t A7105_ID_read(void)
     ID |= (uint32_t) idbytes[2] << 8;
     ID |= (uint32_t) idbytes[3] << 0;
 
-    return(ID);
+    return (ID);
 }
 
 void A7105_ID_write(uint32_t ID)
@@ -172,12 +172,12 @@ void A7105_set_mode(enum A7105_mode mode)
     // DMG shall always be set to 0
     rxreg = 0x3 << 5;
 
-    if(CHNL_WIDTH)
+    if (CHNL_WIDTH)
     {
         setbit(rxreg, 1);
     }
 
-    if(mode == master)
+    if (mode == master)
     {
         clearbit(rxreg, 0);
     }
@@ -202,7 +202,7 @@ uint8_t A7105_receive_byte(void)
     data = SPI_reg_read(A7105_reg_FIFO_data);
     SPI_single_write(A7105_strobe_standby);
 
-    return(data);
+    return (data);
 }
 
 void A7105_send_byte(uint8_t data)

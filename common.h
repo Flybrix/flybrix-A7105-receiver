@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-//Bit operations
+//bit operations
 #define setbit(byte, bit) ((byte) |= ((1) << (bit)))
 #define clearbit(byte, bit) ((byte) &= ~((1) << (bit)))
 #define togglebit(byte, bit) ((byte) ^= ((1) << (bit)))

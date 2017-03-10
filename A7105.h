@@ -1,27 +1,26 @@
 /*
- *  This file is part of A7105-uart, a UART interface to the A7105 wireless
- *  tranceiver.
- *  Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
- *
- *  A7105-uart is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  A7105-uart is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
- */
+    This file is part of A7105-uart, a UART interface to the A7105 wireless
+    tranceiver.
+    Copyright (C) 2015 J.Deitmerg <mowfask@gmail.com>
+
+    A7105-uart is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    A7105-uart is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with A7105-uart.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef A7105_H
 #define A7015_H
 
 #include "common.h"
-
 
 #define A7105_SLEEP      0x80
 #define A7105_IDLE       0x90
@@ -154,7 +153,7 @@ enum A7105_strobe {
     A7105_strobe_RX_reset = 0xf0
 };
 
-enum A7105_mode{
+enum A7105_mode {
     master,
     slave
 };
@@ -165,27 +164,27 @@ enum A7105_mode{
 void A7105_reset(void);
 
 /* A7105_calib: Perform 3 calibrations as in chapter 15 of datasheet.
- *              Should be performed when everything is set up (to the point
- *              that a channel is selected).
- * Returns:
- *  0       on success
- *  The ored combination of the following values:
- *    0x01  if VCO bank calibration took more than 1000us
- *    0x02  if VCO bank calibration was not successful
- *    0x04  if VCO current calibration took more than 1000us
- *    0x08  if VCO current calibration was not successful
- *    0x10  if IF filter bank calibration took more than 1000us
- *    0x20  if IF filter bank calibration was not successful
- */
+                Should be performed when everything is set up (to the point
+                that a channel is selected).
+Returns:
+    0       on success
+    The ored combination of the following values:
+    0x01  if VCO bank calibration took more than 1000us
+    0x02  if VCO bank calibration was not successful
+    0x04  if VCO current calibration took more than 1000us
+    0x08  if VCO current calibration was not successful
+    0x10  if IF filter bank calibration took more than 1000us
+    0x20  if IF filter bank calibration was not successful
+*/
 uint8_t A7105_calib(void);
 
 void A7105_init(void);
 
 /* ID read and write functions:
- * Read or write the 32 bit ID. The most significant bit is read/written
- * first. With the recommended values for byte 0 the ID pattern should
- * therefore be 0x5******* or 0xA*******.
- */
+Read or write the 32 bit ID. The most significant bit is read/written
+first. With the recommended values for byte 0 the ID pattern should
+therefore be 0x5******* or 0xA*******.
+*/
 uint32_t A7105_ID_read(void);
 void A7105_ID_write(uint32_t ID);
 
