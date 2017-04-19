@@ -668,9 +668,9 @@ void loop() {
                         if (packet[0] == 0x20) {
                             // converts [0;255] to [-1;1] fixed point num
                             channel_usec[0] = 1116 + 3 * packet[8]; //ROLL
-                            channel_usec[1] = 1116 + 3 * packet[6]; //PITCH
+                            channel_usec[1] = 1884 - 3 * packet[6]; //PITCH  --REVERSED
                             channel_usec[2] = 1116 + 3 * packet[2]; //THROTTLE
-                            channel_usec[3] = 1116 + 3 * packet[4]; //YAW
+                            channel_usec[3] = 1884 - 3 * packet[4]; //YAW  --REVERSED
                             channel_usec[4] = (packet[9] & 0x04) ? 1881 : 1116; //AUX1 (left trim hold)
                             channel_usec[5] = (packet[9] & 0x08) ? 1116 : 1881; //AUX2 (left stick press)
                             if (missed_cycles) {
