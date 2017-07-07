@@ -662,7 +662,10 @@ void A7105_test() {
                 A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[6]);
                 A7105_WriteByte(A7105_TX);
                 if (!waitTRXCompletion()) {
-                    continue;
+                    rgb(128,0,0);
+                    cli();
+                    updateLED();
+                    sei();
                 }
             }
         }
@@ -676,7 +679,7 @@ void setup()
 
     SPI_init();
     
-    //A7105_test();
+    A7105_test();
 
     while (!rebind()) {
         continue;
