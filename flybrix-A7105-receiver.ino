@@ -588,12 +588,95 @@ uint8_t rebind()
     return 1;
 }
 
+void A7105_test() {
+    A7105_WriteByte(A7105_STANDBY);
+    A7105_reset();
+    A7105_ID_write(0x55201041);
+    A7105_WriteRegister(A7105_01_MODE_CONTROL, 0x63);
+    A7105_WriteRegister(A7105_02_CALC, 0x00); //reset
+    A7105_WriteRegister(A7105_03_FIFOI, 0x0F); //16 bytes
+    A7105_WriteRegister(A7105_04_FIFOII, 0xC0);
+    // GIO:
+    //   0x01 -- WTR
+    //   0x05 -- EOAC/FSYNC
+    //   0x09 -- TMEO/CD
+    //   0x0D -- PMDO
+    A7105_WriteRegister(A7105_0B_GPIO1_PIN1, 0x05);
+    A7105_WriteRegister(A7105_0C_GPIO2_PIN_II, 0x09);
+    A7105_WriteRegister(A7105_0D_CLOCK, 0x05);
+    A7105_WriteRegister(A7105_0E_DATA_RATE, 0x04);
+    A7105_WriteRegister(A7105_15_TX_II, 0x2b);
+    A7105_WriteRegister(A7105_18_RX, 0x62);
+    A7105_WriteRegister(A7105_19_RX_GAIN_I, 0x80);
+    A7105_WriteRegister(A7105_1C_RX_GAIN_IV, 0x0A);
+    A7105_WriteRegister(A7105_1F_CODE_I, 0x07);
+    A7105_WriteRegister(A7105_20_CODE_II, 0x17);
+    A7105_WriteRegister(A7105_29_RX_DEM_TEST_I, 0x47);
+    A7105_WriteByte(A7105_STANDBY);
+    A7105_WriteRegister(A7105_02_CALC, 0x01);
+    A7105_WriteRegister(A7105_0F_PLL_I, 0x00);
+    A7105_WriteRegister(A7105_02_CALC, 0x02);
+    A7105_WriteRegister(A7105_0F_PLL_I, 0xA0);
+    A7105_WriteRegister(A7105_02_CALC, 0x02);
+    A7105_WriteByte(A7105_STANDBY);
+    
+    // build a test packet to send
+    packet[0] = 0x00;
+    packet[1] = 0x11;
+    packet[2] = 0x22;
+    packet[3] = 0x33;
+    packet[4] = 0x44;
+    packet[5] = 0x55;
+    packet[6] = 0x66;
+    packet[7] = 0x77;
+    packet[8] = 0x88;
+    packet[9] = 0x99;
+    packet[10] = 0xaa;
+    packet[11] = 0xbb;
+    packet[12] = 0xcc;
+    packet[13] = 0xdd;
+    packet[14] = 0xee;
+    int sum = 0;
+    for(int i = 0; i < 15; i++)
+        sum += packet[i];
+    packet[15] = (256 - (sum % 256)) & 0xff;
+
+    const uint8_t allowed_ch[] = {0x14, 0x1E, 0x28, 0x32, 0x3C, 0x46, 0x50, 0x5A, 0x64, 0x6E, 0x78, 0x82};
+    
+    for(int j = 0; j < 10; j++) {
+        for(int channel_index = 0; channel_index < 12; channel_index++) {
+            if(channel_index%2) {
+                rgb(0,0,0);
+            }
+            else {
+                rgb(0,128,0);
+            }
+    
+            cli();
+            updateLED();
+            sei();
+            for(int i = 0; i < 2000; i++) {
+                A7105_WriteByte(A7105_STANDBY);
+                A7105_WritePayload((uint8_t*)&packet, sizeof(packet));
+                //A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[channel_index]);
+                A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[6]);
+                A7105_WriteByte(A7105_TX);
+                if (!waitTRXCompletion()) {
+                    continue;
+                }
+            }
+        }
+    }
+}
+
 void setup()
 {
     pinMode(4, OUTPUT);
     pinMode(3, OUTPUT);
 
     SPI_init();
+    
+    //A7105_test();
 
     while (!rebind()) {
         continue;
