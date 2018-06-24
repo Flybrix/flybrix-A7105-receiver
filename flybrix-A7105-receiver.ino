@@ -649,7 +649,7 @@ void A7105_test() {
                 rgb(0,0,0);
             }
             else {
-                rgb(0,128,0);
+                rgb(0,1,0);
             }
     
             cli();
@@ -658,8 +658,8 @@ void A7105_test() {
             for(int i = 0; i < 2000; i++) {
                 A7105_WriteByte(A7105_STANDBY);
                 A7105_WritePayload((uint8_t*)&packet, sizeof(packet));
-                //A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[channel_index]);
-                A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[6]);
+                A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[channel_index]);
+                //A7105_WriteRegister(A7105_0F_PLL_I, allowed_ch[6]);
                 A7105_WriteByte(A7105_TX);
                 if (!waitTRXCompletion()) {
                     rgb(128,0,0);
